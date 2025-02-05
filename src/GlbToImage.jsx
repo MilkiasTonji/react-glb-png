@@ -20,9 +20,9 @@ const ThumbnailRenderer = ({ modelPath, onRendered, setLoading, onError }) => {
         // Convert canvas to an image
         const imageSrc = canvas.toDataURL("image/png");
         onRendered(imageSrc);
-        setLoading(false);
       } catch (error) {
-        onError("Error generating thumbnail.", error);
+        onError("Error generating thumbnail.");
+      } finally{
         setLoading(false)
       }
     };
@@ -59,29 +59,34 @@ const Thumbnail = ({ modelPath }) => {
     <div>
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {loading ? (
-        <p>Loading Model...</p>
-      ) : (
-        <>
-          <img
-            src={imageSrc}
-            alt="3D Model Thumbnail"
-            style={{ width: 200, height: 200 }}
-          />
-          <button onClick={downloadImage} style={{ marginTop: 10 }}>
-            Download Thumbnail
-          </button>
-        </>
+      {loading &&  <p>Loading Model...</p>}
+
+      {imageSrc && (
+                <>
+                <img
+                  src={imageSrc}
+                  alt="3D Model Thumbnail"
+                  style={{ width: 300, height: 300 }}
+                />
+                <button onClick={downloadImage} style={{ marginTop: 10 }}>
+                  Download Thumbnail
+                </button>
+              </>
       )}
       {!error && !imageSrc && (
         <Canvas
-          style={{ width: 300, height: 300 }}
+          style={{ width: 300, height: 300, visibility: 'hidden' }}
           camera={{ position: [0, 2, 5], fov: 50 }}
         >
           <ambientLight intensity={0.5} />
           <directionalLight position={[2, 2, 2]} />
           <OrbitControls enableZoom={false} autoRotate={false} autoRotateSpeed={1} />
-          <ThumbnailRenderer modelPath={modelPath} onRendered={setImageSrc} onError={handleError} setLoading={setLoading} />
+          <ThumbnailRenderer 
+            modelPath={modelPath} 
+            onRendered={setImageSrc} 
+            onError={handleError} 
+            setLoading={setLoading}
+           />
         </Canvas>
       )}
     </div>
